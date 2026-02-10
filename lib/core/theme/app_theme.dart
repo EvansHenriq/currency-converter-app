@@ -21,6 +21,11 @@ abstract class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
+      visualDensity: VisualDensity.comfortable,
+      splashFactory: InkSparkle.splashFactory,
+      textTheme: const TextTheme(
+        headlineSmall: TextStyle(fontWeight: FontWeight.w600),
+      ),
       appBarTheme: AppBarTheme(
         centerTitle: true,
         backgroundColor: colorScheme.surface,
@@ -42,6 +47,18 @@ abstract class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
+      ),
+      dividerTheme: DividerThemeData(
+        space: 0,
+        thickness: 1,
+        color: colorScheme.outlineVariant,
+      ),
+      iconTheme: IconThemeData(
+        color: colorScheme.onSurfaceVariant,
+      ),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: colorScheme.primary,
+        linearTrackColor: colorScheme.surfaceContainerHighest,
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -65,6 +82,9 @@ abstract class AppTheme {
           horizontal: 16,
           vertical: 16,
         ),
+        labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+        floatingLabelStyle: TextStyle(color: colorScheme.primary),
+        prefixStyle: TextStyle(color: colorScheme.onSurfaceVariant),
       ),
     );
   }

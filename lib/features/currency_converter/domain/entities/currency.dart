@@ -20,16 +20,23 @@ class Currency extends Equatable {
 }
 
 class ExchangeRates extends Equatable {
-  final Currency usd;
-  final Currency eur;
+  final Map<String, Currency> currencies;
   final DateTime updatedAt;
 
   const ExchangeRates({
-    required this.usd,
-    required this.eur,
+    required this.currencies,
     required this.updatedAt,
   });
 
+  Currency? operator [](String code) => currencies[code];
+
+  List<String> get availableCodes => currencies.keys.toList();
+
+  double rateFor(String code) {
+    if (code == 'BRL') return 1.0;
+    return currencies[code]?.buyRate ?? 1.0;
+  }
+
   @override
-  List<Object?> get props => [usd, eur, updatedAt];
+  List<Object?> get props => [currencies, updatedAt];
 }

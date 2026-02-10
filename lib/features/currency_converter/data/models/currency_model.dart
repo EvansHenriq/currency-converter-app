@@ -31,24 +31,27 @@ class CurrencyModel extends Currency {
 
 class ExchangeRatesModel extends ExchangeRates {
   const ExchangeRatesModel({
-    required super.usd,
-    required super.eur,
+    required super.currencies,
     required super.updatedAt,
   });
 
   factory ExchangeRatesModel.fromJson(Map<String, dynamic> json) {
     final results = json['results'] as Map<String, dynamic>;
-    final currencies = results['currencies'] as Map<String, dynamic>;
+    final currenciesJson = results['currencies'] as Map<String, dynamic>;
+
+    final Map<String, Currency> parsed = {};
+    for (final entry in currenciesJson.entries) {
+      if (entry.key == 'source') continue;
+      if (entry.value is Map<String, dynamic>) {
+        parsed[entry.key] = CurrencyModel.fromJson(
+          entry.key,
+          entry.value as Map<String, dynamic>,
+        );
+      }
+    }
 
     return ExchangeRatesModel(
-      usd: CurrencyModel.fromJson(
-        'USD',
-        currencies['USD'] as Map<String, dynamic>,
-      ),
-      eur: CurrencyModel.fromJson(
-        'EUR',
-        currencies['EUR'] as Map<String, dynamic>,
-      ),
+      currencies: parsed,
       updatedAt: DateTime.now(),
     );
   }

@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'features/currency_converter/data/datasources/currency_local_data_source.dart';
 import 'features/currency_converter/data/datasources/currency_remote_data_source.dart';
 import 'features/currency_converter/data/repositories/currency_repository_impl.dart';
 import 'features/currency_converter/domain/repositories/currency_repository.dart';
@@ -16,6 +18,7 @@ Future<void> init() async {
     () => CurrencyNotifier(
       getExchangeRates: sl(),
       convertCurrency: sl(),
+      localDataSource: sl(),
     ),
   );
 
@@ -32,7 +35,12 @@ Future<void> init() async {
   sl.registerLazySingleton<CurrencyRemoteDataSource>(
     () => CurrencyRemoteDataSourceImpl(dio: sl()),
   );
+  sl.registerLazySingleton<CurrencyLocalDataSource>(
+    () => CurrencyLocalDataSourceImpl(sharedPreferences: sl()),
+  );
 
   // External
   sl.registerLazySingleton(() => Dio());
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
 }

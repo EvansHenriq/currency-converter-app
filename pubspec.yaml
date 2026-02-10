@@ -14,6 +14,7 @@ dependencies:
   dartz: ^0.10.1
   get_it: ^7.6.7
   equatable: ^2.0.5
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

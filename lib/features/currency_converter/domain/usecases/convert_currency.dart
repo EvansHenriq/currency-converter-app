@@ -1,68 +1,42 @@
 import 'package:equatable/equatable.dart';
 
-enum CurrencyType { brl, usd, eur }
-
 class ConvertCurrency {
   ConversionResult call(ConvertCurrencyParams params) {
-    final double amountInBrl = _toBrl(
-      params.amount,
-      params.fromCurrency,
-      params.usdRate,
-      params.eurRate,
-    );
+    final double amountInBrl = params.amount * params.fromRate;
 
-    return ConversionResult(
-      brl: amountInBrl,
-      usd: amountInBrl / params.usdRate,
-      eur: amountInBrl / params.eurRate,
-    );
-  }
-
-  double _toBrl(
-    double amount,
-    CurrencyType currency,
-    double usdRate,
-    double eurRate,
-  ) {
-    switch (currency) {
-      case CurrencyType.brl:
-        return amount;
-      case CurrencyType.usd:
-        return amount * usdRate;
-      case CurrencyType.eur:
-        return amount * eurRate;
+    final Map<String, double> converted = {};
+    for (final entry in params.rates.entries) {
+      converted[entry.key] = amountInBrl / entry.value;
     }
+
+    return ConversionResult(values: converted);
   }
 }
 
 class ConvertCurrencyParams extends Equatable {
   final double amount;
-  final CurrencyType fromCurrency;
-  final double usdRate;
-  final double eurRate;
+  final String fromCurrency;
+  final double fromRate;
+  final Map<String, double> rates;
 
   const ConvertCurrencyParams({
     required this.amount,
     required this.fromCurrency,
-    required this.usdRate,
-    required this.eurRate,
+    required this.fromRate,
+    required this.rates,
   });
 
   @override
-  List<Object?> get props => [amount, fromCurrency, usdRate, eurRate];
+  List<Object?> get props => [amount, fromCurrency, fromRate, rates];
 }
 
 class ConversionResult extends Equatable {
-  final double brl;
-  final double usd;
-  final double eur;
+  final Map<String, double> values;
 
-  const ConversionResult({
-    required this.brl,
-    required this.usd,
-    required this.eur,
-  });
+  const ConversionResult({required this.values});
+
+  double operator [](String code) => values[code] ?? 0.0;
 
   @override
-  List<Object?> get props => [brl, usd, eur];
+  List<Object?> get props => [values];
 }
