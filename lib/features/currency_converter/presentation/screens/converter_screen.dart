@@ -35,7 +35,12 @@ class _ConverterScreenState extends ConsumerState<ConverterScreen> {
   }
 
   TextEditingController _controllerFor(String code) {
-    return _controllers.putIfAbsent(code, () => TextEditingController());
+    return _controllers.putIfAbsent(
+      code,
+      () => TextEditingController(
+        text: CurrencyFormatter.formatValue(0, code),
+      ),
+    );
   }
 
   void _disposeController(String code) {
@@ -64,6 +69,22 @@ class _ConverterScreenState extends ConsumerState<ConverterScreen> {
     }
 
     _isUpdating = false;
+  }
+
+  void _recalculateFromExistingValues() {
+    final currentState = ref.read(currencyProvider);
+    if (currentState is! CurrencyLoaded) return;
+
+    for (final code in currentState.activeCurrencies) {
+      final controller = _controllers[code];
+      if (controller != null && controller.text.isNotEmpty) {
+        final amount = CurrencyFormatter.parseValue(controller.text, code);
+        if (amount != null && amount > 0) {
+          _onCurrencyChanged(controller.text, code);
+          return;
+        }
+      }
+    }
   }
 
   void _onCurrencyChanged(String text, String currencyCode) {
@@ -323,6 +344,9 @@ class _ConverterScreenState extends ConsumerState<ConverterScreen> {
                     onTap: () {
                       Navigator.pop(context);
                       ref.read(currencyProvider.notifier).addCurrency(code);
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        _recalculateFromExistingValues();
+                      });
                     },
                   );
                 },

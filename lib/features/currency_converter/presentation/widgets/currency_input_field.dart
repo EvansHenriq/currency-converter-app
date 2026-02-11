@@ -98,19 +98,24 @@ class CurrencyInputField extends StatelessWidget {
           const SizedBox(width: 12),
         ],
         Expanded(
-          child: TextField(
-            controller: controller,
-            enabled: enabled,
-            decoration: InputDecoration(
-              labelText: label,
-              prefixText: prefix,
-            ),
-            style: theme.textTheme.titleLarge,
-            onChanged: onChanged,
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              CurrencyTextInputFormatter(currencyCode: currencyCode),
-            ],
+          child: ValueListenableBuilder<TextEditingValue>(
+            valueListenable: controller,
+            builder: (context, value, _) {
+              return TextField(
+                controller: controller,
+                enabled: enabled,
+                decoration: InputDecoration(
+                  labelText: value.text.isEmpty ? label : null,
+                  prefixText: prefix,
+                ),
+                style: theme.textTheme.titleLarge,
+                onChanged: onChanged,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  CurrencyTextInputFormatter(currencyCode: currencyCode),
+                ],
+              );
+            },
           ),
         ),
       ],
